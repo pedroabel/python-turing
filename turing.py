@@ -1,56 +1,68 @@
 class TuringMachine:
-    def __init__(self, tape, transitions):
-        self.tape = tape
-        self.head_position = 0
-        self.current_state = 'q0'
-        self.transitions = transitions
+    def __init__(self, fita, transicoes):
+        self.fita = fita
+        self.posicao = 0
+        self.estado_atual = 'q0'
+        self.transicoes = transicoes
 
-    def move_head(self, direction):
-        if direction == 'D':
-            self.head_position += 1
-        elif direction == 'E':
-            self.head_position -= 1
+    def movimento(self, direcao):
+        if direcao == 'D':
+            self.posicao += 1
+        elif direcao == 'E':
+            self.posicao -= 1
 
     def run(self):
         while True:
-            if self.current_state == 'qf':
+            if self.estado_atual == 'qf':
                 print("Aceito")
                 break
 
-            if self.head_position >= len(self.tape) or self.head_position < 0:
+            if self.posicao >= len(self.fita) or self.posicao < 0:
                 print(
-                    "Ação: {} Rejeitado - Ação inválida: transição não definida.".format(self.current_state))
+                    "Ação: {} Rejeitado - Ação inválida: transição não definida.".format(self.estado_atual))
                 break
 
-            symbol = self.tape[self.head_position]
+            valor = self.fita[self.posicao]
 
-            if (self.current_state, symbol) not in self.transitions:
+            if (self.estado_atual, valor) not in self.transicoes:
                 print(
-                    "Ação: {} Rejeitado - Ação inválida: transição não definida.".format(self.current_state))
+                    "Ação: {} Rejeitado - Ação inválida: transição não definida.".format(self.estado_atual))
                 break
 
-            new_state, new_symbol, direction = self.transitions[(
-                self.current_state, symbol)]
+            novo_estado, novo_valor, direcao = self.transicoes[(
+                self.estado_atual, valor)]
 
-            self.tape[self.head_position] = new_symbol
-            self.current_state = new_state
-            self.move_head(direction)
+            self.fita[self.posicao] = novo_valor
+            self.estado_atual = novo_estado
+            self.movimento(direcao)
 
 
 # Cadastro da fita
-tape_input = input(
+fita_input = input(
     "Digite os valores da fita separados por espaço (máximo de 100): ")
-tape_input = tape_input.split()[:100]
-tape = tape_input + ['_'] * (100 - len(tape_input))
-initial_tape = tape.copy()
+
+fita_input = fita_input.split()[:100]
+fita = fita_input + ['_'] * (100 - len(fita_input))
+fita_inicial = fita.copy()
 
 # Definição das quintuplas de transição
-transitions = {
+transicoes = {
     # (estado atual, simbolo lido) : (Novo estado, simbolo escrito, movimento)
+    #  ('q0', '0'): ('q1', '1', 'D'),
+    #  ('q0', '1'): ('q1', '0', 'D'),
+    #  ('q1', '0'): ('q2', '1', 'D'),
+    #  ('q1', '1'): ('q2', '0', 'D'),
+    #  ('q2', '0'): ('q3', '1', 'D'),
+    #  ('q2', '1'): ('q3', '0', 'D'),
+    #  ('q3', '0'): ('q4', '1', 'D'),
+    #  ('q3', '1'): ('q4', '0', 'D'),
+    #  ('q4', '0'): ('q5', '1', 'D'),
+    #  ('q4', '1'): ('q5', '0', 'D'),
+    #  ('q5', '0'): ('qf', '1', 'D'),
+    #  ('q5', '1'): ('qf', '0', 'D'),
 
     # VALOR PADRAO DA FITA - 1 2 3 4 5 6 7 8 9
     # Primeiro teste - inverter todos os numeros para letras
-    # Resultado esperado - A B C D E F G H 1
     ('q0', '1'): ('q1', 'A', 'D'),
     ('q1', '2'): ('q2', 'B', 'D'),
     ('q2', '3'): ('q3', 'C', 'D'),
@@ -61,7 +73,6 @@ transitions = {
     ('q7', '8'): ('q8', 'H', 'D'),
     ('q8', '9'): ('q10', '1', 'E'),
     # Segundo teste - pegar as letras e inverter para nuemeros
-    # Resultado esperado - 9 8 7 6 5 4 3 2 1
     # ('q10', 'H'): ('q11', '2', 'E'),
     # ('q11', 'G'): ('q12', '3', 'E'),
     # ('q12', 'F'): ('q13', '4', 'E'),
@@ -76,8 +87,8 @@ transitions = {
 
 }
 
-tm = TuringMachine(tape, transitions)
+tm = TuringMachine(fita, transicoes)
 tm.run()
 
-print("\nFita inicial:", ' '.join(initial_tape[:len(tape_input)]).strip())
-print("Fita alterada:", ' '.join(tm.tape[:len(tape_input)]).strip())
+print("\nFita inicial:", ' '.join(fita_inicial[:len(fita_input)]).strip())
+print("Fita alterada:", ' '.join(tm.fita[:len(fita_input)]).strip())
